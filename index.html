@@ -21,6 +21,10 @@ main{overflow:hidden}.hero{min-height:535px;background:radial-gradient(circle at
 @media(max-width:600px){.top-strip{font-size:8px;letter-spacing:1.2px}.site-header{height:65px;padding:0 12px}.brand{gap:8px}.brand-mark{width:35px;height:35px;font-size:14px;border-radius:11px}.brand b{font-size:14px}.brand small{font-size:7px;letter-spacing:3px}.site-header nav{gap:12px;font-size:11px}.cart-trigger{padding:8px 9px;font-size:11px}.cart-trigger span{display:none}.cart-trigger b{width:20px;height:20px;margin-left:2px}.hero{display:block;padding:42px 20px 60px;min-height:0}.hero h1{font-size:54px;margin:14px 0}.hero-copy p{font-size:13px}.hero-actions{gap:14px}.primary-link{padding:13px 14px;font-size:11px}.text-link{font-size:10px}.hero-points{gap:10px;font-size:8px;margin-top:26px}.hero-visual{height:255px;margin-top:22px}.hero-visual img{width:85%;height:220px}.hero-glow{width:230px;height:230px}.hero-sticker{width:68px;height:68px;top:5px;right:3%}.hero-sticker b{font-size:12px}.hero-sticker small{font-size:7px}.hero-caption{font-size:8px;bottom:0;padding:9px 12px}.hero-bottom{padding:10px 20px;font-size:8px;letter-spacing:1px}.hero-bottom span{font-size:7px}.deal-section,.menu-section{padding:48px 12px}.section-heading{align-items:flex-start;margin-bottom:20px;gap:8px}.section-heading h2{font-size:29px}.section-heading p{font-size:10px}.deal-tag,.menu-count{font-size:7px;padding:7px 8px;white-space:nowrap}.deal-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.deal-image{height:85px}.deal-ribbon{top:6px;left:6px;padding:5px 6px;font-size:6px}.deal-info{padding:8px}.deal-info h3{font-size:10px;line-height:1.2}.deal-info p{font-size:8px;line-height:1.3;min-height:42px;margin-bottom:7px}.deal-foot{display:block}.deal-price{font-size:13px;display:block;margin-bottom:7px}.deal-price small{font-size:7px}.deal-add{width:100%;padding:7px 2px;font-size:8px;border-radius:6px}.menu-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.food-image{height:82px}.food-label{left:5px;top:5px;padding:4px 5px;font-size:6px;letter-spacing:.5px}.food-info{padding:8px 7px}.food-info h3{font-size:10px;line-height:1.2;min-height:24px}.food-info p{font-size:8px;line-height:1.3;min-height:38px;margin-bottom:8px}.food-bottom{display:flex;flex-direction:column;align-items:stretch;gap:6px}.food-price{font-size:13px}.food-price small{font-size:7px}.add-button{width:100%;padding:7px 2px;font-size:8px;border-radius:6px}.bottom-banner{margin:0 12px 45px;padding:24px 18px;border-radius:15px}.bottom-banner h2{font-size:29px}.banner-button{font-size:7px;padding:11px 8px}.cart-drawer{padding:18px}.drawer-head h2{font-size:25px}}
 @media(max-width:360px){.site-header nav{gap:8px}.hero-points{font-size:7px}.food-info h3{font-size:9px}.food-price{font-size:12px}}
 
+  
+.menu-tools{margin:-10px 0 25px}.search-box{display:flex;align-items:center;gap:12px;max-width:560px;background:#fff;border:1px solid #dce6f1;border-radius:12px;padding:0 16px;box-shadow:0 8px 22px #0a31500b}.search-box span{font-size:18px}.search-box input{width:100%;border:0;outline:0;background:transparent;padding:16px 0;font:inherit;font-size:13px;color:var(--deep)}.search-message{font-size:11px;color:var(--muted);min-height:16px;margin:8px 2px 0}.rating-area{margin-top:12px;padding-top:10px;border-top:1px solid #edf1f6}.rating-summary{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}.rating-summary strong{color:#9a7000;font-size:12px}.rating-stars{display:flex;gap:3px;margin-top:7px}.rating-stars button{border:0;background:transparent;padding:1px;color:#c6ced8;font-size:22px;line-height:1}.rating-stars button.active,.rating-stars button:hover{color:#f4b900}.rating-hint{font-size:9px;color:#8492a3;margin-top:3px}.rating-review{font-size:10px;color:#617187;margin-top:5px;line-height:1.4}.no-results{grid-column:1/-1;text-align:center;background:#fff;border:1px dashed #cbd8e7;border-radius:14px;padding:35px;color:var(--muted)}
+@media(max-width:600px){.search-box input{font-size:11px;padding:13px 0}.rating-stars button{font-size:18px}.rating-summary{font-size:9px}.rating-review{font-size:8px}}
+
   </style>
 </head>
 <body>
@@ -63,7 +67,14 @@ main{overflow:hidden}.hero{min-height:535px;background:radial-gradient(circle at
     <section class="menu-section" id="menu">
       <div class="section-heading menu-heading">
         <div><span class="eyebrow">MADE FRESH FOR YOU</span><h2>Explore Our <em>Menu</em></h2><p>Pick your favourites and add them to your cart.</p></div>
-        <span class="menu-count">18 delicious choices</span>
+        <span class="menu-count" id="menuCount">18 delicious choices</span>
+      </div>
+      <div class="menu-tools">
+        <label class="search-box" for="productSearch">
+          <span aria-hidden="true">🔎</span>
+          <input id="productSearch" type="search" placeholder="Search burgers, shawarma, fries and deals..." autocomplete="off">
+        </label>
+        <p class="search-message" id="searchMessage">Search our menu and today's deals.</p>
       </div>
       <div class="menu-grid" id="menuGrid"></div>
     </section>
@@ -134,17 +145,67 @@ const cartTotal=document.getElementById('cartTotal');
 const modal=document.getElementById('cartModal');
 let toastTimer;
 
-function renderMenu(){
- menuGrid.innerHTML=products.map(p=>`<article class="food-card">
-  <div class="food-image"><img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.deliveryhero.io/image/fd-pk/products/23199090.jpg?width=700'"><span class="food-label">${p.tag}</span></div>
-  <div class="food-info"><h3>${p.name}</h3><p>${p.desc}</p><div class="food-bottom"><span class="food-price">${money(p.price)} <small>/ item</small></span><button class="add-button" onclick="addToCart('${p.id}')">＋ Add to Cart</button></div></div>
- </article>`).join('');
+function getRatings(){
+ try{return JSON.parse(localStorage.getItem('alAzizRatings')||'{}');}catch(e){return {};}
 }
-function renderDeals(){
- dealGrid.innerHTML=deals.map(d=>`<article class="deal-card">
-  <div class="deal-image"><img src="${d.img}" alt="${d.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.deliveryhero.io/image/fd-pk/LH/vasg-listing.jpg'"><span class="deal-ribbon">${d.tag}</span></div>
-  <div class="deal-info"><h3>${d.name}</h3><p>${d.desc}</p><div class="deal-foot"><span class="deal-price">${money(d.price)}<small>COMBO PRICE</small></span><button class="deal-add" onclick="addToCart('${d.id}')">＋ Add Deal</button></div></div>
- </article>`).join('');
+function getProductRating(id){
+ const list=getRatings()[id]||[];
+ if(!list.length)return {average:0,count:0};
+ return {average:list.reduce((sum,r)=>sum+r.stars,0)/list.length,count:list.length};
+}
+function rateProduct(id,stars){
+ const all=getRatings();
+ const list=all[id]||[];
+ const existing=list.findIndex(r=>r.voter==='this-browser');
+ const review=prompt('Write a short review (optional):')||'';
+ const entry={stars,review:review.trim(),voter:'this-browser',date:new Date().toISOString()};
+ if(existing>=0)list[existing]=entry;else list.push(entry);
+ all[id]=list;
+ try{localStorage.setItem('alAzizRatings',JSON.stringify(all));}catch(e){alert('Could not save rating in this browser.');}
+ renderMenu(document.getElementById('productSearch')?.value||'');
+}
+function renderMenu(query=''){
+ const q=query.trim().toLowerCase();
+ const visible=products.filter(p=>`${p.name} ${p.desc} ${p.tag}`.toLowerCase().includes(q));
+ const count=document.getElementById('menuCount');
+ if(count)count.textContent=`${visible.length} of ${products.length} choices`;
+ const message=document.getElementById('searchMessage');
+ if(message)message.textContent=q?`${visible.length} matching product${visible.length===1?'':'s'} found.`:'Search our menu by product name.';
+ if(!visible.length){
+  menuGrid.innerHTML='<div class="no-results">😕 No products found. Try another search.</div>';
+  return;
+ }
+ const ratings=getRatings();
+ menuGrid.innerHTML=visible.map(p=>{
+  const rating=getProductRating(p.id);
+  const own=(ratings[p.id]||[]).find(r=>r.voter==='this-browser');
+  const stars=[1,2,3,4,5].map(n=>`<button type="button" class="${own&&n<=own.stars?'active':''}" aria-label="Rate ${p.name} ${n} stars" title="${n} star${n>1?'s':''}" onclick="rateProduct('${p.id}',${n})">★</button>`).join('');
+  const latest=(ratings[p.id]||[]).filter(r=>r.review).slice(-1)[0];
+  return `<article class="food-card">
+   <div class="food-image"><img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.deliveryhero.io/image/fd-pk/products/23199090.jpg?width=700'"><span class="food-label">${p.tag}</span></div>
+   <div class="food-info"><h3>${p.name}</h3><p>${p.desc}</p><div class="food-bottom"><span class="food-price">${money(p.price)} <small>/ item</small></span><button class="add-button" onclick="addToCart('${p.id}')">＋ Add to Cart</button></div>
+    <div class="rating-area"><div class="rating-summary"><strong>${rating.count?rating.average.toFixed(1)+' ★':'No rating yet'}</strong><span>(${rating.count} ${rating.count===1?'rating':'ratings'})</span></div><div class="rating-stars" aria-label="Rate ${p.name}">${stars}</div><div class="rating-hint">${own?'Your rating: '+own.stars+'/5 — tap to update':'Tap a star to rate this product'}</div>${latest?`<div class="rating-review">“${escapeHTML(latest.review)}”</div>`:''}</div>
+   </div>
+  </article>`;
+ }).join('');
+}
+function renderDeals(query=''){
+ const q=query.trim().toLowerCase();
+ const visible=deals.filter(d=>`${d.name} ${d.desc} ${d.tag}`.toLowerCase().includes(q));
+ if(!visible.length){dealGrid.innerHTML='<div class="no-results">No matching deals found.</div>';return;}
+ const ratings=getRatings();
+ dealGrid.innerHTML=visible.map(d=>{
+  const rating=getProductRating(d.id);
+  const own=(ratings[d.id]||[]).find(r=>r.voter==='this-browser');
+  const stars=[1,2,3,4,5].map(n=>`<button type="button" class="${own&&n<=own.stars?'active':''}" aria-label="Rate ${d.name} ${n} stars" title="${n} star${n>1?'s':''}" onclick="rateProduct('${d.id}',${n})">★</button>`).join('');
+  const latest=(ratings[d.id]||[]).filter(r=>r.review).slice(-1)[0];
+  return `<article class="deal-card">
+   <div class="deal-image"><img src="${d.img}" alt="${d.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.deliveryhero.io/image/fd-pk/LH/vasg-listing.jpg'"><span class="deal-ribbon">${d.tag}</span></div>
+   <div class="deal-info"><h3>${d.name}</h3><p>${d.desc}</p><div class="deal-foot"><span class="deal-price">${money(d.price)}<small>COMBO PRICE</small></span><button class="deal-add" onclick="addToCart('${d.id}')">＋ Add Deal</button></div>
+    <div class="rating-area deal-rating"><div class="rating-summary"><strong>${rating.count?rating.average.toFixed(1)+' ★':'No rating yet'}</strong><span>(${rating.count} ${rating.count===1?'rating':'ratings'})</span></div><div class="rating-stars">${stars}</div><div class="rating-hint">${own?'Your rating: '+own.stars+'/5 — tap to update':'Tap a star to rate this deal'}</div>${latest?`<div class="rating-review">“${escapeHTML(latest.review)}”</div>`:''}</div>
+   </div>
+  </article>`;
+ }).join('');
 }
 function addToCart(id){
  cart[id]=(cart[id]||0)+1;renderCart();
@@ -194,6 +255,18 @@ document.getElementById('placeOrder').addEventListener('click',()=>{
  document.getElementById('cartCount').textContent='0';
 });
 function escapeHTML(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const productSearch=document.getElementById('productSearch');
+if(productSearch)productSearch.addEventListener('input',e=>{
+ renderMenu(e.target.value);
+ renderDeals(e.target.value);
+ const message=document.getElementById('searchMessage');
+ if(message){
+  const q=e.target.value.trim();
+  const matches=products.filter(p=>`${p.name} ${p.desc} ${p.tag}`.toLowerCase().includes(q.toLowerCase())).length
+   +deals.filter(d=>`${d.name} ${d.desc} ${d.tag}`.toLowerCase().includes(q.toLowerCase())).length;
+  message.textContent=q?`${matches} matching product/deal${matches===1?'':'s'} found.`:'Search our menu and today\'s deals.';
+ }
+});
 renderMenu();renderDeals();renderCart();
 
   </script>
