@@ -34,17 +34,67 @@ const cartTotal=document.getElementById('cartTotal');
 const modal=document.getElementById('cartModal');
 let toastTimer;
 
-function renderMenu(){
- menuGrid.innerHTML=products.map(p=>`<article class="food-card">
-  <div class="food-image"><img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.deliveryhero.io/image/fd-pk/products/23199090.jpg?width=700'"><span class="food-label">${p.tag}</span></div>
-  <div class="food-info"><h3>${p.name}</h3><p>${p.desc}</p><div class="food-bottom"><span class="food-price">${money(p.price)} <small>/ item</small></span><button class="add-button" onclick="addToCart('${p.id}')">＋ Add to Cart</button></div></div>
- </article>`).join('');
+function getRatings(){
+ try{return JSON.parse(localStorage.getItem('alAzizRatings')||'{}');}catch(e){return {};}
 }
-function renderDeals(){
- dealGrid.innerHTML=deals.map(d=>`<article class="deal-card">
-  <div class="deal-image"><img src="${d.img}" alt="${d.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.deliveryhero.io/image/fd-pk/LH/vasg-listing.jpg'"><span class="deal-ribbon">${d.tag}</span></div>
-  <div class="deal-info"><h3>${d.name}</h3><p>${d.desc}</p><div class="deal-foot"><span class="deal-price">${money(d.price)}<small>COMBO PRICE</small></span><button class="deal-add" onclick="addToCart('${d.id}')">＋ Add Deal</button></div></div>
- </article>`).join('');
+function getProductRating(id){
+ const list=getRatings()[id]||[];
+ if(!list.length)return {average:0,count:0};
+ return {average:list.reduce((sum,r)=>sum+r.stars,0)/list.length,count:list.length};
+}
+function rateProduct(id,stars){
+ const all=getRatings();
+ const list=all[id]||[];
+ const existing=list.findIndex(r=>r.voter==='this-browser');
+ const review=prompt('Write a short review (optional):')||'';
+ const entry={stars,review:review.trim(),voter:'this-browser',date:new Date().toISOString()};
+ if(existing>=0)list[existing]=entry;else list.push(entry);
+ all[id]=list;
+ try{localStorage.setItem('alAzizRatings',JSON.stringify(all));}catch(e){alert('Could not save rating in this browser.');}
+ renderMenu(document.getElementById('productSearch')?.value||'');
+}
+function renderMenu(query=''){
+ const q=query.trim().toLowerCase();
+ const visible=products.filter(p=>`${p.name} ${p.desc} ${p.tag}`.toLowerCase().includes(q));
+ const count=document.getElementById('menuCount');
+ if(count)count.textContent=`${visible.length} of ${products.length} choices`;
+ const message=document.getElementById('searchMessage');
+ if(message)message.textContent=q?`${visible.length} matching product${visible.length===1?'':'s'} found.`:'Search our menu by product name.';
+ if(!visible.length){
+  menuGrid.innerHTML='<div class="no-results">😕 No products found. Try another search.</div>';
+  return;
+ }
+ const ratings=getRatings();
+ menuGrid.innerHTML=visible.map(p=>{
+  const rating=getProductRating(p.id);
+  const own=(ratings[p.id]||[]).find(r=>r.voter==='this-browser');
+  const stars=[1,2,3,4,5].map(n=>`<button type="button" class="${own&&n<=own.stars?'active':''}" aria-label="Rate ${p.name} ${n} stars" title="${n} star${n>1?'s':''}" onclick="rateProduct('${p.id}',${n})">★</button>`).join('');
+  const latest=(ratings[p.id]||[]).filter(r=>r.review).slice(-1)[0];
+  return `<article class="food-card">
+   <div class="food-image"><img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.deliveryhero.io/image/fd-pk/products/23199090.jpg?width=700'"><span class="food-label">${p.tag}</span></div>
+   <div class="food-info"><h3>${p.name}</h3><p>${p.desc}</p><div class="food-bottom"><span class="food-price">${money(p.price)} <small>/ item</small></span><button class="add-button" onclick="addToCart('${p.id}')">＋ Add to Cart</button></div>
+    <div class="rating-area"><div class="rating-summary"><strong>${rating.count?rating.average.toFixed(1)+' ★':'No rating yet'}</strong><span>(${rating.count} ${rating.count===1?'rating':'ratings'})</span></div><div class="rating-stars" aria-label="Rate ${p.name}">${stars}</div><div class="rating-hint">${own?'Your rating: '+own.stars+'/5 — tap to update':'Tap a star to rate this product'}</div>${latest?`<div class="rating-review">“${escapeHTML(latest.review)}”</div>`:''}</div>
+   </div>
+  </article>`;
+ }).join('');
+}
+function renderDeals(query=''){
+ const q=query.trim().toLowerCase();
+ const visible=deals.filter(d=>`${d.name} ${d.desc} ${d.tag}`.toLowerCase().includes(q));
+ if(!visible.length){dealGrid.innerHTML='<div class="no-results">No matching deals found.</div>';return;}
+ const ratings=getRatings();
+ dealGrid.innerHTML=visible.map(d=>{
+  const rating=getProductRating(d.id);
+  const own=(ratings[d.id]||[]).find(r=>r.voter==='this-browser');
+  const stars=[1,2,3,4,5].map(n=>`<button type="button" class="${own&&n<=own.stars?'active':''}" aria-label="Rate ${d.name} ${n} stars" title="${n} star${n>1?'s':''}" onclick="rateProduct('${d.id}',${n})">★</button>`).join('');
+  const latest=(ratings[d.id]||[]).filter(r=>r.review).slice(-1)[0];
+  return `<article class="deal-card">
+   <div class="deal-image"><img src="${d.img}" alt="${d.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.deliveryhero.io/image/fd-pk/LH/vasg-listing.jpg'"><span class="deal-ribbon">${d.tag}</span></div>
+   <div class="deal-info"><h3>${d.name}</h3><p>${d.desc}</p><div class="deal-foot"><span class="deal-price">${money(d.price)}<small>COMBO PRICE</small></span><button class="deal-add" onclick="addToCart('${d.id}')">＋ Add Deal</button></div>
+    <div class="rating-area deal-rating"><div class="rating-summary"><strong>${rating.count?rating.average.toFixed(1)+' ★':'No rating yet'}</strong><span>(${rating.count} ${rating.count===1?'rating':'ratings'})</span></div><div class="rating-stars">${stars}</div><div class="rating-hint">${own?'Your rating: '+own.stars+'/5 — tap to update':'Tap a star to rate this deal'}</div>${latest?`<div class="rating-review">“${escapeHTML(latest.review)}”</div>`:''}</div>
+   </div>
+  </article>`;
+ }).join('');
 }
 function addToCart(id){
  cart[id]=(cart[id]||0)+1;renderCart();
@@ -94,4 +144,16 @@ document.getElementById('placeOrder').addEventListener('click',()=>{
  document.getElementById('cartCount').textContent='0';
 });
 function escapeHTML(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const productSearch=document.getElementById('productSearch');
+if(productSearch)productSearch.addEventListener('input',e=>{
+ renderMenu(e.target.value);
+ renderDeals(e.target.value);
+ const message=document.getElementById('searchMessage');
+ if(message){
+  const q=e.target.value.trim();
+  const matches=products.filter(p=>`${p.name} ${p.desc} ${p.tag}`.toLowerCase().includes(q.toLowerCase())).length
+   +deals.filter(d=>`${d.name} ${d.desc} ${d.tag}`.toLowerCase().includes(q.toLowerCase())).length;
+  message.textContent=q?`${matches} matching product/deal${matches===1?'':'s'} found.`:'Search our menu and today\'s deals.';
+ }
+});
 renderMenu();renderDeals();renderCart();
